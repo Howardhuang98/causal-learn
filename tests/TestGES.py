@@ -191,16 +191,9 @@ class TestGES(unittest.TestCase):
 
     def test_score_cache_BDeu(self):
         X = np.loadtxt('example_data6.txt').T
-        X = np.mat(X)
-        parameters = {'sample_prior': 1,  # default ess = 1
-                      'structure_prior': 1,
-                      'r_i_map': {i: len(np.unique(np.asarray(X[:, i]))) for i in range(X.shape[1])}}
         start = time()
         Record = ges(X, 'local_score_BDeu')
         end = time()
         print(end-start)
-        start = time()
-        Record = ges(X, 'local_score_BDeu')
-        end = time()
-        print(end - start)
+
 
