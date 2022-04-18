@@ -5,8 +5,10 @@ import pandas as pd
 from numpy import ndarray
 
 from causallearn.utils.ScoreUtils import *
+from causallearn.score.ScoreCache import Cache
 
 
+@Cache
 def local_score_BIC(Data: ndarray, i: int, PAi: List[int], parameters=None) -> float:
     """
     Calculate the *negative* local score with BIC for the linear Gaussian continue data case
@@ -48,7 +50,7 @@ def local_score_BIC(Data: ndarray, i: int, PAi: List[int], parameters=None) -> f
 
     return score
 
-
+@Cache
 def local_score_BDeu(Data: ndarray, i: int, PAi: List[int], parameters=None) -> float:
     """
     Calculate the *negative* local score with BDeu for the discrete case
