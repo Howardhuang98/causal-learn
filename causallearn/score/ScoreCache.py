@@ -6,17 +6,21 @@
 @Modify Time :    2022/4/18 15:55  
 ------------      
 """
+import collections
 
 import numpy as np
 
 
 class Cache:
     """
-    simple caching without ordering or size limit.
+    LRU cache. if the capacity is None, it is a infinite Cache.
     """
-    def __init__(self, LocalScoreFunc):
+
+    def __init__(self, LocalScoreFunc, capacity=None):
         self.LocalScoreFunc = LocalScoreFunc
+        # for one data, there is one cache.
         self.caches = {}
+        self.capacity = capacity
 
     def __call__(self, *args, **kwargs):
         data_hash = None
@@ -30,13 +34,47 @@ class Cache:
                 i = arg
             elif isinstance(arg, list):
                 Pai = tuple(arg)
-        if data_hash not in self.caches.keys():
-            self.caches[data_hash] = {}
 
-        cache = self.caches[data_hash]
-        if (i, Pai) in cache.keys():
-            return cache[(i, Pai)]
+        value = self.get(data_hash,i,Pai)
+        if value is None:
+            value = self.LocalScoreFunc(*args, **kwargs)
         else:
-            score = self.LocalScoreFunc(*args, **kwargs)
-            cache[(i, Pai)] = score
-            return score
+            print("cache works")
+        self.set(data_hash,i,Pai,value)
+        return value
+
+    def get(self, data_hash, i, Pai):
+        if data_hash in self.caches.keys():
+            cache = self.caches[data_hash]
+        else:
+            self.caches[data_hash] = collections.OrderedDict()
+            cache = self.caches[data_hash]
+
+        if (i, Pai) in cache.keys():
+            value = cache.pop((i, Pai))
+            cache[(i, Pai)] = value
+            return value
+        else:
+            return None
+
+    def set(self, data_hash, i, Pai, value):
+        if data_hash in self.caches.keys():
+            cache = self.caches[data_hash]
+        else:
+            self.caches[data_hash] = collections.OrderedDict()
+            cache = self.caches[data_hash]
+
+        if self.capacity is not None:
+            if (i, Pai) in cache.keys():
+                cache.pop((i, Pai))
+                cache[(i, Pai)] = value
+            else:
+                if len(cache) >= self.capacity:
+                    cache.popitem(last=False)
+                    cache[(i, Pai)] = value
+                else:
+                    cache[(i, Pai)] = value
+        else:
+            if (i, Pai) not in cache.keys():
+                cache[(i, Pai)] = value
+

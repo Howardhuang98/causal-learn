@@ -196,14 +196,11 @@ class TestGES(unittest.TestCase):
                       'structure_prior': 1,
                       'r_i_map': {i: len(np.unique(np.asarray(X[:, i]))) for i in range(X.shape[1])}}
         start = time()
-        local_score_BDeu(X, 20, [24], parameters)
+        Record = ges(X, 'local_score_BDeu')
         end = time()
         print(end-start)
         start = time()
-        local_score_BDeu(X, 20, [24], parameters)
-        local_score_BDeu(X, 20, [24], parameters)
-        local_score_BDeu(X, 20, [24], parameters)
-        local_score_BDeu(X, 20, [24], parameters)
+        Record = ges(X, 'local_score_BDeu')
         end = time()
         print(end - start)
 
