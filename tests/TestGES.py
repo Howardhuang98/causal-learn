@@ -1,5 +1,7 @@
 import sys
 import io
+from time import time
+
 from causallearn.score.LocalScoreFunction import local_score_BDeu
 from causallearn.utils.GraphUtils import GraphUtils
 sys.path.append("")
@@ -186,3 +188,22 @@ class TestGES(unittest.TestCase):
         score = local_score_BDeu(X, 20, [24], parameters)
 
         print(score)
+
+    def test_score_cache_BDeu(self):
+        X = np.loadtxt('example_data6.txt').T
+        X = np.mat(X)
+        parameters = {'sample_prior': 1,  # default ess = 1
+                      'structure_prior': 1,
+                      'r_i_map': {i: len(np.unique(np.asarray(X[:, i]))) for i in range(X.shape[1])}}
+        start = time()
+        local_score_BDeu(X, 20, [24], parameters)
+        end = time()
+        print(end-start)
+        start = time()
+        local_score_BDeu(X, 20, [24], parameters)
+        local_score_BDeu(X, 20, [24], parameters)
+        local_score_BDeu(X, 20, [24], parameters)
+        local_score_BDeu(X, 20, [24], parameters)
+        end = time()
+        print(end - start)
+
